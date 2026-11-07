@@ -20,7 +20,9 @@ _GROUP = re.compile(
     r"^[ \t]*\$(\w+)\b(.*?)\$END\b", re.IGNORECASE | re.MULTILINE | re.DOTALL
 )
 _OPTION = re.compile(r"([A-Za-z]\w*(?:\([\d,]+\))?)\s*=\s*(\S+)")
-_MODERN_BASIS = re.compile(r"^(A?CC[DTQ56](C|WC)?|A?PCSEG-\d|SPK.*|KTZV.*)$", re.IGNORECASE)
+_MODERN_BASIS = re.compile(
+    r"^(A?CC[DTQ56](C|WC)?|A?PCSEG-\d|SPK.*|KTZV.*)$", re.IGNORECASE
+)
 
 
 def strip_comments(text):
@@ -44,7 +46,7 @@ def parse_groups(text):
     for match in _GROUP.finditer(source):
         if source[position : match.start()].strip():
             raise ValueError(
-                f"Text outside a group: {source[position:match.start()].split()[0]}"
+                f"Text outside a group: {source[position : match.start()].split()[0]}"
             )
         name = match[1].upper()
         try:

@@ -9,9 +9,9 @@ import tempfile
 
 from .group_builder import (
     ELEMENTS,
-    length_factor,
     format_groups,
     get_option,
+    length_factor,
     parse_groups,
     set_option,
     split_groups,
@@ -139,9 +139,7 @@ def internal_rows(lines, variables=""):
                     )
                 tangent = cross(normal, axis)
                 angle = math.radians(value(parts[4]))
-                dihedral = (
-                    math.radians(value(parts[6])) if index > 2 else 0.0
-                )
+                dihedral = math.radians(value(parts[6])) if index > 2 else 0.0
                 direction = tuple(
                     math.cos(angle) * a
                     + math.sin(angle)

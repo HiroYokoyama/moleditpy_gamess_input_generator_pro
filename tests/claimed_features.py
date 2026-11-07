@@ -49,15 +49,30 @@ CLAIMS = {
 # The warning shown for each job GAMESS refuses, and what GAMESS itself prints.
 REFUSALS = {
     "refuse_rhf_triplet": ("needs MULT=1", "SCFTYP=RHF MUST HAVE MULT=1"),
-    "refuse_bad_parity": ("cannot have multiplicity", "CHECK YOUR INPUT CHARGE AND MULTIPLICITY"),
+    "refuse_bad_parity": (
+        "cannot have multiplicity",
+        "CHECK YOUR INPUT CHARGE AND MULTIPLICITY",
+    ),
     "refuse_cc_no_memddi": ("needs MEMDDI", "INSUFFICIENT DISTRIBUTED MEMORY"),
-    "refuse_lccd_parallel": ("one core only", "ONLY CCTYP=CCSD OR CCTYP=CCSD(T) CAN RUN IN PARALLEL"),
+    "refuse_lccd_parallel": (
+        "one core only",
+        "ONLY CCTYP=CCSD OR CCTYP=CCSD(T) CAN RUN IN PARALLEL",
+    ),
     "refuse_cc_with_dft": ("at most one", "AT MOST ONE CORRELATION METHOD"),
     "refuse_mp2_with_dft": ("at most one", "AT MOST ONE CORRELATION METHOD"),
     "refuse_mp2_with_cc": ("at most one", "AT MOST ONE CORRELATION METHOD"),
-    "refuse_nmr_dft": ("works only with RHF", "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"),
-    "refuse_nmr_uhf": ("works only with RHF", "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"),
-    "refuse_nmr_dirscf": ("does not work with DIRSCF", "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"),
+    "refuse_nmr_dft": (
+        "works only with RHF",
+        "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR",
+    ),
+    "refuse_nmr_uhf": (
+        "works only with RHF",
+        "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR",
+    ),
+    "refuse_nmr_dirscf": (
+        "does not work with DIRSCF",
+        "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR",
+    ),
     "refuse_nmr_parallel": ("one core", "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"),
     "refuse_pcseg_cartesian": ("needs ISPHER=1", "PLEASE SET ISPHER=1"),
     "refuse_sadpoint_no_hess": ("HESS=CALC", "DID NOT SUPPLY A $HESS GROUP"),

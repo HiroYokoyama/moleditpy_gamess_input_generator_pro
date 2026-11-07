@@ -29,10 +29,12 @@ Then set CI_MAIN_APP_SRC in the test step's env block to activate
 real-context mode.
 """
 
+import importlib.util
 import os
 import sys
-import importlib.util
+import types
 import unittest
+from unittest import mock
 from unittest.mock import MagicMock
 
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
@@ -222,13 +224,17 @@ class TestPersistenceHandlers(unittest.TestCase):
 
     def test_roundtrip_save_load(self):
         _init_mod._dialog_opened = True
-        self.load({"mwords": 8, "memddi": 16, "groups": " $CONTRL RUNTYP=OPTIMIZE $END"})
+        self.load(
+            {"mwords": 8, "memddi": 16, "groups": " $CONTRL RUNTYP=OPTIMIZE $END"}
+        )
         saved = dict(self.save())
         self.reset()
         _init_mod._dialog_opened = True
         self.load(saved)
         self.assertEqual(_init_mod.current_settings["mwords"], 8)
-        self.assertEqual(_init_mod.current_settings["groups"], " $CONTRL RUNTYP=OPTIMIZE $END")
+        self.assertEqual(
+            _init_mod.current_settings["groups"], " $CONTRL RUNTYP=OPTIMIZE $END"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -268,6 +274,87 @@ except ImportError:
         return unittest.skip("pytest not available for skipif")(cls)
 
 
+def _install_stubs():
+    qt_core = sys.modules.get("PySide6.QtCore")
+    if qt_core is None or not hasattr(qt_core, "__file__"):
+        qt_core = types.ModuleType("PySide6.QtCore")
+        qt_core.Qt = MagicMock()
+        qt_core.QRegularExpression = MagicMock
+        qt_core.QTimer = MagicMock
+        sys.modules["PySide6.QtCore"] = qt_core
+
+    pyside6 = sys.modules.get("PySide6")
+    if pyside6 is None or not hasattr(pyside6, "__file__"):
+        pyside6 = types.ModuleType("PySide6")
+        pyside6.QtCore = qt_core
+        sys.modules["PySide6"] = pyside6
+
+    qt_widgets = sys.modules.get("PySide6.QtWidgets")
+    if qt_widgets is None or not hasattr(qt_widgets, "__file__"):
+        qt_widgets = types.ModuleType("PySide6.QtWidgets")
+        for name in [
+            "QDialog",
+            "QVBoxLayout",
+            "QHBoxLayout",
+            "QLabel",
+            "QLineEdit",
+            "QSpinBox",
+            "QPushButton",
+            "QGroupBox",
+            "QComboBox",
+            "QTextEdit",
+            "QTabWidget",
+            "QTableWidget",
+            "QTableWidgetItem",
+            "QCheckBox",
+            "QWidget",
+            "QFormLayout",
+            "QCompleter",
+            "QSizePolicy",
+            "QMessageBox",
+            "QFileDialog",
+            "QInputDialog",
+            "QApplication",
+            "QScrollArea",
+        ]:
+            setattr(qt_widgets, name, MagicMock)
+        pyside6.QtWidgets = qt_widgets
+        sys.modules["PySide6.QtWidgets"] = qt_widgets
+
+    qt_gui = sys.modules.get("PySide6.QtGui")
+    if qt_gui is None or not hasattr(qt_gui, "__file__"):
+        if qt_gui is None:
+            qt_gui = types.ModuleType("PySide6.QtGui")
+            sys.modules["PySide6.QtGui"] = qt_gui
+
+        class MockQColor(MagicMock):
+            def __init__(self, *args, **kwargs):
+                super().__init__()
+
+            def redF(self):
+                return 1.0
+
+            def greenF(self):
+                return 1.0
+
+            def blueF(self):
+                return 1.0
+
+        setattr(qt_gui, "QColor", MockQColor)
+        mock_font = MagicMock()
+        mock_font.Weight.Bold = 75
+        setattr(qt_gui, "QFont", mock_font)
+        setattr(qt_gui, "QPalette", MagicMock)
+        setattr(qt_gui, "QKeySequence", MagicMock)
+        setattr(qt_gui, "QShortcut", MagicMock)
+        pyside6.QtGui = qt_gui
+        sys.modules["PySide6.QtGui"] = qt_gui
+
+    sys.modules.setdefault("rdkit", MagicMock())
+    sys.modules.setdefault("rdkit.Chem", MagicMock())
+    sys.modules.setdefault("pyvista", MagicMock())
+
+
 @_skipif
 class TestWithRealPluginContext(unittest.TestCase):
     @classmethod
@@ -276,6 +363,11 @@ class TestWithRealPluginContext(unittest.TestCase):
             return
         if _MAIN_APP_SRC not in sys.path:
             sys.path.insert(0, _MAIN_APP_SRC)
+        # The main app's package imports Qt and RDKit; CI installs neither here.
+        restore = mock.patch.dict(sys.modules)
+        restore.start()
+        cls.addClassCleanup(restore.stop)
+        _install_stubs()
         from moleditpy.plugins.plugin_interface import PluginContext
 
         cls.PluginContext = PluginContext

@@ -5,7 +5,11 @@ import os
 import tempfile
 import unittest
 
-from gamess_input_generator_pro.group_builder import BOHR_ANGSTROM, get_option, parse_groups
+from gamess_input_generator_pro.group_builder import (
+    BOHR_ANGSTROM,
+    get_option,
+    parse_groups,
+)
 from gamess_input_generator_pro.input_loading import (
     internal_rows,
     parse_input,
@@ -38,7 +42,11 @@ class TestParseInput(unittest.TestCase):
 
     def test_generated_keywords_leave_the_groups_box(self):
         groups = parse_groups(parse_input(CARTESIAN)[0]["groups"])
-        for name, key in (("CONTRL", "ICHARG"), ("CONTRL", "MULT"), ("CONTRL", "COORD")):
+        for name, key in (
+            ("CONTRL", "ICHARG"),
+            ("CONTRL", "MULT"),
+            ("CONTRL", "COORD"),
+        ):
             self.assertIsNone(get_option(groups, name, key))
         self.assertIsNone(get_option(groups, "SYSTEM", "MWORDS"))
         self.assertEqual(get_option(groups, "CONTRL", "SCFTYP"), "UHF")
@@ -59,17 +67,23 @@ class TestParseInput(unittest.TestCase):
         self.assertEqual(len(rows), 1)
 
     def test_group_case_is_ignored(self):
-        self.assertEqual(len(parse_input(CARTESIAN.lower().replace("my title", "t"))[1]), 2)
+        self.assertEqual(
+            len(parse_input(CARTESIAN.lower().replace("my title", "t"))[1]), 2
+        )
 
     def test_negative_znuc_is_a_ghost(self):
         rows = parse_input(" $DATA\nt\nC1\nGH -6.0 1 2 3\n $END\n")[1]
         self.assertEqual(rows[0], ("C:", 1.0, 2.0, 3.0))
 
     def test_zero_znuc_is_a_dummy(self):
-        self.assertEqual(parse_input(" $DATA\nt\nC1\nBQ 0.0 1 2 3\n $END\n")[1][0][0], "X")
+        self.assertEqual(
+            parse_input(" $DATA\nt\nC1\nBQ 0.0 1 2 3\n $END\n")[1][0][0], "X"
+        )
 
     def test_label_does_not_decide_the_element(self):
-        self.assertEqual(parse_input(" $DATA\nt\nC1\nCARBON1 6.0 1 2 3\n $END\n")[1][0][0], "C")
+        self.assertEqual(
+            parse_input(" $DATA\nt\nC1\nCARBON1 6.0 1 2 3\n $END\n")[1][0][0], "C"
+        )
 
     def test_inline_basis_cards_are_not_atoms(self):
         text = """ $CONTRL RUNTYP=ENERGY $END

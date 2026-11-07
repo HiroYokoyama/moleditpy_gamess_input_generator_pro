@@ -79,7 +79,9 @@ def _is_ghost_symbol(symbol: str) -> bool:
 
 
 def _custom_symbol(atom) -> str:
-    return atom.GetProp("custom_symbol").strip() if atom.HasProp("custom_symbol") else ""
+    return (
+        atom.GetProp("custom_symbol").strip() if atom.HasProp("custom_symbol") else ""
+    )
 
 
 def _atom_card(atom):
@@ -238,6 +240,7 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         kw_h_layout = QHBoxLayout()
         self.keywords_edit = QTextEdit(DEFAULT_GROUPS)
         self.keywords_edit.setFont(QFont("Courier New", 9))
+        self.keywords_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.keywords_edit.setFixedHeight(110)
         self.keywords_edit.textChanged.connect(self.update_preview)
         self.kw_highlighter = GamessSyntaxHighlighter(self.keywords_edit.document())
@@ -299,6 +302,7 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         extra_layout.addLayout(extra_h)
         self.tail_edit = QTextEdit()
         self.tail_edit.setFont(QFont("Courier New", 9))
+        self.tail_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.tail_edit.setFixedHeight(100)
         self.tail_edit.setPlaceholderText("$HESS, $DIPDR, $VEC from a punch file")
         self.tail_edit.textChanged.connect(self.update_preview)
@@ -316,6 +320,8 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         self.preview_text = QTextEdit()
         self.preview_text.textChanged.connect(self._input_text_edited)
         self.preview_text.setFont(QFont("Courier New", 10))
+        # Cards are read by column, so a wrapped line would misrepresent the file.
+        self.preview_text.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.preview_text.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
@@ -535,7 +541,9 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
                 _is_ghost_symbol(_custom_symbol(atom)) for atom in self.mol.GetAtoms()
             )
             if ghosts:
-                notice = "Ghost atoms keep their basis only in Cartesian: using Cartesian."
+                notice = (
+                    "Ghost atoms keep their basis only in Cartesian: using Cartesian."
+                )
             else:
                 try:
                     rows = self._build_zmatrix_data()
@@ -787,7 +795,9 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         current = self.preset_combo.currentText()
         self.preset_combo.blockSignals(True)
         self.preset_combo.clear()
-        self.preset_combo.addItems(sorted(k for k in self.presets_data if k != "Global"))
+        self.preset_combo.addItems(
+            sorted(k for k in self.presets_data if k != "Global")
+        )
         if current in self.presets_data:
             self.preset_combo.setCurrentText(current)
         elif "Default" in self.presets_data:
@@ -804,7 +814,9 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         self._restore_memddi(data.get("memddi", 0))
         self.keywords_edit.setPlainText(data.get("groups", DEFAULT_GROUPS))
         self.tail_edit.setPlainText(data.get("extra", ""))
-        self.coord_format_combo.setCurrentText(data.get("coord_format", COORD_CARTESIAN))
+        self.coord_format_combo.setCurrentText(
+            data.get("coord_format", COORD_CARTESIAN)
+        )
         self.update_preview()
 
     def save_preset_dialog(self):
@@ -836,9 +848,9 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
     def save_global_settings(self):
         if not getattr(self, "ui_ready", False):
             return
-        self.presets_data.setdefault("Global", {})[
-            "auto_suffix"
-        ] = self.auto_suffix_cb.isChecked()
+        self.presets_data.setdefault("Global", {})["auto_suffix"] = (
+            self.auto_suffix_cb.isChecked()
+        )
         self.save_presets_to_file()
 
     # ------------------------------------------------------------------

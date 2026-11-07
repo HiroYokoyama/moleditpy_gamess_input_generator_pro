@@ -11,7 +11,6 @@ handoff can be probed before any GUI exists.
 
 import importlib.util
 import os
-import sys
 import tempfile
 import types
 import unittest

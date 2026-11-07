@@ -8,12 +8,12 @@ from gamess_input_generator_pro.group_builder import (
     build_input,
     cartesian_cards,
     check_input,
-    length_factor,
     data_group,
     finalize_groups,
     format_group,
     format_groups,
     get_option,
+    length_factor,
     needs_spherical,
     normalize_for_builder,
     parse_groups,
@@ -26,10 +26,14 @@ from gamess_input_generator_pro.group_builder import (
 class TestParseGroups(unittest.TestCase):
     def test_reads_options_in_upper_case_keys(self):
         groups = parse_groups(" $contrl scftyp=RHF RUNTYP = ENERGY $end\n")
-        self.assertEqual(groups, [("CONTRL", [("SCFTYP", "RHF"), ("RUNTYP", "ENERGY")])])
+        self.assertEqual(
+            groups, [("CONTRL", [("SCFTYP", "RHF"), ("RUNTYP", "ENERGY")])]
+        )
 
     def test_group_may_span_cards(self):
-        groups = parse_groups(" $CONTRL SCFTYP=RHF\n  RUNTYP=ENERGY $END\n $BASIS GBASIS=STO $END")
+        groups = parse_groups(
+            " $CONTRL SCFTYP=RHF\n  RUNTYP=ENERGY $END\n $BASIS GBASIS=STO $END"
+        )
         self.assertEqual(get_option(groups, "CONTRL", "RUNTYP"), "ENERGY")
         self.assertEqual(get_option(groups, "BASIS", "GBASIS"), "STO")
 
@@ -99,7 +103,9 @@ class TestSetOption(unittest.TestCase):
 
 class TestFinalize(unittest.TestCase):
     def test_contrl_and_system_come_first(self):
-        groups = finalize_groups([("BASIS", [("GBASIS", "STO")])], 0, 1, 100, 0, "UNIQUE")
+        groups = finalize_groups(
+            [("BASIS", [("GBASIS", "STO")])], 0, 1, 100, 0, "UNIQUE"
+        )
         self.assertEqual([name for name, _ in groups], ["CONTRL", "SYSTEM", "BASIS"])
 
     def test_generated_values_replace_typed_ones(self):
@@ -143,7 +149,9 @@ class TestCards(unittest.TestCase):
         ]
         lines = zmatrix_cards(rows)
         self.assertEqual(lines[0].split(), ["O"])
-        self.assertEqual(lines[2].split(), ["H", "1", "0.96000000", "2", "104.50000000"])
+        self.assertEqual(
+            lines[2].split(), ["H", "1", "0.96000000", "2", "104.50000000"]
+        )
 
     def test_variables_follow_a_blank_card(self):
         rows = [
@@ -168,7 +176,15 @@ class TestCards(unittest.TestCase):
 
     def test_extra_is_copied_after_data(self):
         text = build_input(
-            "t", " $BASIS GBASIS=STO $END", [], 0, 1, 10, 0, "UNIQUE", " $HESS\n 1\n $END\n"
+            "t",
+            " $BASIS GBASIS=STO $END",
+            [],
+            0,
+            1,
+            10,
+            0,
+            "UNIQUE",
+            " $HESS\n 1\n $END\n",
         )
         self.assertLess(text.index("$DATA"), text.index("$HESS"))
         self.assertIn(" $HESS\n 1\n $END\n", text)
@@ -189,7 +205,9 @@ class TestCheckInput(unittest.TestCase):
         return " ".join(check_input(parse_groups(text), mult, electrons, memddi, extra))
 
     def test_a_plain_job_has_no_notes(self):
-        self.assertEqual(self._notes(" $CONTRL SCFTYP=RHF RUNTYP=ENERGY $END", 1, 10), "")
+        self.assertEqual(
+            self._notes(" $CONTRL SCFTYP=RHF RUNTYP=ENERGY $END", 1, 10), ""
+        )
 
     def test_rhf_with_open_shell(self):
         self.assertIn("MULT=1", self._notes(" $CONTRL SCFTYP=RHF $END", 3))
@@ -231,16 +249,21 @@ class TestCheckInput(unittest.TestCase):
         )
 
     def test_raman_needs_both_groups(self):
-        self.assertIn("$DIPDR", self._notes(" $CONTRL RUNTYP=RAMAN $END", extra=" $HESS\n $END"))
+        self.assertIn(
+            "$DIPDR", self._notes(" $CONTRL RUNTYP=RAMAN $END", extra=" $HESS\n $END")
+        )
         self.assertNotIn(
             "$DIPDR",
-            self._notes(" $CONTRL RUNTYP=RAMAN $END", extra=" $HESS\n $END\n $DIPDR\n $END"),
+            self._notes(
+                " $CONTRL RUNTYP=RAMAN $END", extra=" $HESS\n $END\n $DIPDR\n $END"
+            ),
         )
 
     def test_sadpoint_without_hessian(self):
         self.assertIn("HESS=CALC", self._notes(" $CONTRL RUNTYP=SADPOINT $END"))
         self.assertNotIn(
-            "HESS=CALC", self._notes(" $CONTRL RUNTYP=SADPOINT $END\n $STATPT HESS=CALC $END")
+            "HESS=CALC",
+            self._notes(" $CONTRL RUNTYP=SADPOINT $END\n $STATPT HESS=CALC $END"),
         )
 
 

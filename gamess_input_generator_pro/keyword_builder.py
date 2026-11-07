@@ -1,5 +1,6 @@
 """Builds the option groups from choices; any keyword it has no control for is kept."""
 
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -60,6 +61,8 @@ class GamessGroupBuilderDialog(QDialog):
         layout.addWidget(QLabel("Groups:"))
         self.preview = QTextEdit()
         self.preview.setReadOnly(True)
+        self.preview.setFont(QFont("Courier New", 9))
+        self.preview.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.preview.setFixedHeight(120)
         layout.addWidget(self.preview)
         buttons = QHBoxLayout()

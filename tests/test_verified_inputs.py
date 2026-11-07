@@ -7,6 +7,7 @@ import unittest
 
 import claimed_features as C
 import verified_jobs as V
+
 from gamess_input_generator_pro.constants import (
     BUILDER_TABS,
     CCTYP,
@@ -15,7 +16,11 @@ from gamess_input_generator_pro.constants import (
     GBASIS,
     SOLVENTS,
 )
-from gamess_input_generator_pro.group_builder import check_input, parse_groups, split_groups
+from gamess_input_generator_pro.group_builder import (
+    check_input,
+    parse_groups,
+    split_groups,
+)
 from gamess_input_generator_pro.input_loading import parse_input
 
 with open(os.path.join(V.INPUTS, "RESULTS.json"), encoding="utf-8") as handle:
@@ -66,8 +71,12 @@ class TestScience(unittest.TestCase):
         return RESULTS["jobs"][name]["energy"]
 
     def test_bohr_gives_the_same_molecule(self):
-        self.assertAlmostEqual(self.energy("units_bohr"), self.energy("rhf_energy"), places=6)
-        self.assertAlmostEqual(self.energy("zmatrix_bohr"), self.energy("zmatrix"), places=6)
+        self.assertAlmostEqual(
+            self.energy("units_bohr"), self.energy("rhf_energy"), places=6
+        )
+        self.assertAlmostEqual(
+            self.energy("zmatrix_bohr"), self.energy("zmatrix"), places=6
+        )
 
     def test_variables_give_the_same_molecule(self):
         self.assertEqual(self.energy("zmatrix_variables"), self.energy("zmatrix"))
@@ -102,7 +111,9 @@ class TestScience(unittest.TestCase):
 
     def test_moread_converges_at_once(self):
         self.assertLessEqual(RESULTS["jobs"]["moread"]["iterations"], 2)
-        self.assertAlmostEqual(self.energy("moread"), self.energy("rhf_energy"), places=6)
+        self.assertAlmostEqual(
+            self.energy("moread"), self.energy("rhf_energy"), places=6
+        )
 
 
 class TestClaims(unittest.TestCase):
@@ -170,7 +181,10 @@ class TestRefusals(unittest.TestCase):
             electrons = 10 if job["atoms"] is V.WATER else None
             with self.subTest(job=name):
                 notes = check_input(
-                    parse_groups(V.groups_text(job)), job["mult"], electrons, job["memddi"]
+                    parse_groups(V.groups_text(job)),
+                    job["mult"],
+                    electrons,
+                    job["memddi"],
                 )
                 self.assertIn(warning, " ".join(notes))
 
@@ -179,11 +193,17 @@ class TestRefusals(unittest.TestCase):
             if name == "nmr":  # the one-core reminder always shows, and it is honest
                 continue
             blocks = split_groups(_read(name))
-            extra = "\n".join(raw for block, _, raw in blocks if block in ("HESS", "DIPDR", "VEC"))
+            extra = "\n".join(
+                raw for block, _, raw in blocks if block in ("HESS", "DIPDR", "VEC")
+            )
             with self.subTest(job=name):
                 self.assertEqual(
                     check_input(
-                        parse_groups(V.groups_text(job)), job["mult"], None, job["memddi"], extra
+                        parse_groups(V.groups_text(job)),
+                        job["mult"],
+                        None,
+                        job["memddi"],
+                        extra,
                     ),
                     [],
                 )

@@ -75,7 +75,11 @@ class DialogCase(unittest.TestCase):
         mol = mol if mol is not None else _mol("O")
         settings = kwargs.pop("settings", {})
         dlg = M.GamessSetupDialogPro(
-            None, mol=mol, persistent_settings=settings, get_molecule=lambda: mol, **kwargs
+            None,
+            mol=mol,
+            persistent_settings=settings,
+            get_molecule=lambda: mol,
+            **kwargs,
         )
         self.addCleanup(dlg.deleteLater)
         return dlg
@@ -129,7 +133,9 @@ class TestPreview(DialogCase):
         dlg = self.dialog(mol)
         settings = parse_input(self.text(dlg))[0]
         self.assertEqual(settings["mult"], 2)
-        self.assertEqual(get_option(parse_groups(settings["groups"]), "CONTRL", "SCFTYP"), "ROHF")
+        self.assertEqual(
+            get_option(parse_groups(settings["groups"]), "CONTRL", "SCFTYP"), "ROHF"
+        )
 
     def test_title_goes_to_data_and_is_cut(self):
         dlg = self.dialog()
@@ -299,7 +305,9 @@ class TestBuilder(DialogCase):
             " $SCF DIRSCF=.T. $END\n $PCM SOLVNT=THF $END\n",
         )
         builder = self.builder(dlg)
-        self.assertEqual(builder.widgets[("CONTRL", "RUNTYP")][0].currentData(), "HESSIAN")
+        self.assertEqual(
+            builder.widgets[("CONTRL", "RUNTYP")][0].currentData(), "HESSIAN"
+        )
         self.assertEqual(builder.widgets[("CONTRL", "DFTTYP")][0].currentData(), "PBE0")
         self.assertTrue(builder.widgets[("CONTRL", "NPRINT")][0].isChecked())
         self.assertTrue(builder.widgets[("SCF", "DIRSCF")][0].isChecked())
@@ -307,7 +315,9 @@ class TestBuilder(DialogCase):
 
     def test_keywords_without_a_control_survive_the_round_trip(self):
         dlg = self.dialog()
-        self.set_groups(dlg, " $CONTRL RUNTYP=ENERGY MAXIT=77 $END\n $ZMAT DLC=.T. $END\n")
+        self.set_groups(
+            dlg, " $CONTRL RUNTYP=ENERGY MAXIT=77 $END\n $ZMAT DLC=.T. $END\n"
+        )
         builder = self.builder(dlg)
         builder.widgets[("CONTRL", "RUNTYP")][0].setCurrentText("GRADIENT")
         builder.accept()
@@ -400,7 +410,9 @@ class TestFiles(DialogCase):
         dlg = self.dialog(filename="water.pmeprj")
         dlg.auto_suffix_cb.setChecked(False)
         dlg.save_file()
-        self.assertTrue(QFileDialog.getSaveFileName.call_args[0][2].endswith("water.inp"))
+        self.assertTrue(
+            QFileDialog.getSaveFileName.call_args[0][2].endswith("water.inp")
+        )
 
     def test_every_verified_input_loads_verbatim(self):
         shown = []
@@ -408,12 +420,28 @@ class TestFiles(DialogCase):
             if not name.endswith(".inp"):
                 continue
             path = os.path.join(INPUTS, name)
-            dlg = self.dialog(display_molecule=shown.append)
+            host = [_mol("O")]
+
+            def display(loaded, host=host):
+                host[0] = loaded
+                shown.append(loaded)
+
+            dlg = M.GamessSetupDialogPro(
+                None,
+                mol=host[0],
+                persistent_settings={},
+                get_molecule=lambda host=host: host[0],
+                display_molecule=display,
+            )
+            self.addCleanup(dlg.deleteLater)
             self.assertTrue(dlg.load_input_file(path), name)
             with open(path, encoding="utf-8") as handle:
                 self.assertEqual(self.text(dlg), handle.read(), name)
             self.assertFalse(dlg._is_modified(), name)
             self.assertIs(shown[-1], dlg.mol, name)
+            self.assertEqual(
+                shown[-1].GetNumAtoms(), len(parse_input(self.text(dlg))[1])
+            )
         self.assertGreater(len(shown), 30)
 
     def test_foreign_file_is_refused_and_changes_nothing(self):
@@ -428,7 +456,11 @@ class TestFiles(DialogCase):
 
     def test_recover_conditions_from_edited_text(self):
         dlg = self.dialog()
-        edited = self.text(dlg).replace("RUNTYP=OPTIMIZE", "RUNTYP=HESSIAN").replace("MWORDS=100", "MWORDS=321")
+        edited = (
+            self.text(dlg)
+            .replace("RUNTYP=OPTIMIZE", "RUNTYP=HESSIAN")
+            .replace("MWORDS=100", "MWORDS=321")
+        )
         dlg.preview_text.setPlainText(edited)
         self.assertTrue(dlg._text_override)
         dlg.recover_input_conditions()
@@ -518,7 +550,9 @@ class TestSubmit(DialogCase):
         from PySide6.QtWidgets import QWidget
 
         host = QWidget()
-        host.plugin_manager = mock.Mock(plugins=[{"name": "Job Manager", "module": module}])
+        host.plugin_manager = mock.Mock(
+            plugins=[{"name": "Job Manager", "module": module}]
+        )
         self.addCleanup(host.deleteLater)
         return host
 
@@ -528,7 +562,9 @@ class TestSubmit(DialogCase):
     def test_submit_saves_then_hands_the_file_over(self):
         manager = FakeJobManager()
         mol = _mol("O")
-        dlg = M.GamessSetupDialogPro(self.host(manager), mol=mol, get_molecule=lambda: mol)
+        dlg = M.GamessSetupDialogPro(
+            self.host(manager), mol=mol, get_molecule=lambda: mol
+        )
         self.assertFalse(dlg.submit_btn.isHidden())
         dlg.submit_to_cluster()
         self.assertEqual(manager.calls, [(os.path.join(self.tmp, "job.inp"), "job")])
@@ -536,7 +572,9 @@ class TestSubmit(DialogCase):
     def test_refusal_is_reported(self):
         manager = FakeJobManager(accept=False)
         mol = _mol("O")
-        dlg = M.GamessSetupDialogPro(self.host(manager), mol=mol, get_molecule=lambda: mol)
+        dlg = M.GamessSetupDialogPro(
+            self.host(manager), mol=mol, get_molecule=lambda: mol
+        )
         dlg.submit_to_cluster()
         QMessageBox.warning.assert_called_once()
 
@@ -586,7 +624,7 @@ class TestPluginEntry(DialogCase):
         return P, context, windows
 
     def test_opener_takes_gamess_and_refuses_orca(self):
-        P, context, windows = self.context(_mol("O"))
+        _, context, windows = self.context(_mol("O"))
         args = context.register_file_opener.call_args
         self.assertEqual(args[0][0], ".inp")
         self.assertGreater(args[1]["priority"], 100)
@@ -601,7 +639,7 @@ class TestPluginEntry(DialogCase):
         self.assertIn("rhf_energy", windows["dialog"].windowTitle())
 
     def test_drop_handler_takes_only_gamess_inputs(self):
-        P, context, _ = self.context(_mol("O"))
+        _, context, _ = self.context(_mol("O"))
         handle_drop = context.register_drop_handler.call_args[0][0]
         self.assertFalse(handle_drop("molecule.xyz"))
         orca = os.path.join(self.tmp, "orca.inp")
@@ -613,14 +651,16 @@ class TestPluginEntry(DialogCase):
         later.assert_called_once()
 
     def test_no_molecule_warns(self):
-        P, context, windows = self.context(None)
+        _, context, windows = self.context(None)
         context.add_export_action.call_args[0][1]()
         QMessageBox.warning.assert_called_once()
         self.assertEqual(windows, {})
 
     def test_import_menu_is_registered(self):
         _, context, _ = self.context(_mol("O"))
-        self.assertEqual(context.add_menu_action.call_args[0][0], "File/Import/GAMESS Input...")
+        self.assertEqual(
+            context.add_menu_action.call_args[0][0], "File/Import/GAMESS Input..."
+        )
 
 
 if __name__ == "__main__":
