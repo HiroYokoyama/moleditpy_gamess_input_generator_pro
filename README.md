@@ -103,4 +103,4 @@ Install it through the MoleditPy Plugin Installer once it is registered, or copy
 
 ## License
 
-GPL-3.0-or-later. See [LICENSE](LICENSE) and [LICENSING.md](LICENSING.md).
+LGPL-3.0-or-later. See [LICENSE](LICENSE), [COPYING](COPYING) and [LICENSING.md](LICENSING.md).
