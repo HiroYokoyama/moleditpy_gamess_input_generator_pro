@@ -110,7 +110,7 @@ def set_option(groups, name, key, value):
                     for option, current in options
                 ]
                 done = True
-            elif value in (None, ""):
+            else:
                 options = [item for item in options if item[0] != key]
         result.append((group, options))
     if not done:

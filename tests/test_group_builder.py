@@ -83,6 +83,15 @@ class TestFormatGroup(unittest.TestCase):
 
 
 class TestSetOption(unittest.TestCase):
+    def test_repeated_groups_cannot_override_the_new_setting(self):
+        groups = parse_groups(
+            " $CONTRL ICHARG=0 MULT=1 $END\n $CONTRL ICHARG=2 NPRINT=7 $END"
+        )
+        updated = set_option(groups, "CONTRL", "ICHARG", "1")
+        self.assertEqual(get_option(updated, "CONTRL", "ICHARG"), "1")
+        self.assertEqual(get_option(updated, "CONTRL", "NPRINT"), "7")
+        self.assertEqual(get_option(groups, "CONTRL", "ICHARG"), "2")
+
     def test_adds_group_when_missing(self):
         groups = set_option([], "PCM", "SOLVNT", "WATER")
         self.assertEqual(groups, [("PCM", [("SOLVNT", "WATER")])])
