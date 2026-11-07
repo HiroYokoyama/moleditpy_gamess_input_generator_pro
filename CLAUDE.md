@@ -44,9 +44,9 @@ python -m pytest tests/test_group_builder.py tests/test_input_parsing.py tests/t
 python -m pytest tests/test_real_dialog.py -q
 ```
 
-There are no GitHub workflows for now, so run these locally. The package must still
-import without Qt; the real window test is skipped without it, and `REQUIRE_REAL_QT=1`
-makes that a failure.
+CI runs the headless suite in `tests.yml` and real windows in `qt-callbacks.yml`.
+The package must import without Qt; `REQUIRE_REAL_QT=1` makes missing real-window
+dependencies a failure in the Qt job.
 
 ## Privacy
 
