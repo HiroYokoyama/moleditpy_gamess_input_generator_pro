@@ -8,6 +8,7 @@ DFTTYP = [
     "B3PW91", "B97", "B97-D", "X3LYP", "M05", "M05-2X", "M06", "M06-L", "M06-2X",
     "M06-HF", "M08-HX", "M08-SO", "M11", "M11-L", "MN15", "MN15-L", "TPSS", "BMK",
 ]
+# Only CCSD and CCSD(T) run in parallel; the others need one core and MEMDDI=0.
 CCTYP = ["LCCD", "CCD", "CCSD", "CCSD(T)", "R-CC", "CR-CC", "CR-CCL", "CCSD(TQ)", "CR-CC(Q)"]
 GBASIS = [
     "STO", "N21", "N31", "N311", "G3L", "G3LX", "MINI", "MIDI", "DZV", "DH", "TZV", "MC",

@@ -36,9 +36,9 @@ from .group_builder import (
     build_input,
     cartesian_cards,
     check_input,
-    coordinate_factors,
     format_groups,
     get_option,
+    length_factor,
     parse_groups,
     set_option,
     zmatrix_cards,
@@ -527,7 +527,7 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
         """(cards, COORD value, notice) for the selected format."""
         if not self._resolve_live_mol():
             return [], "UNIQUE", ""
-        length, angle = coordinate_factors(groups)
+        length = length_factor(groups)
         style = self.coord_format_combo.currentText()
         notice = ""
         if style != COORD_CARTESIAN:
@@ -540,11 +540,7 @@ class GamessSetupDialogPro(QDialog, InputLoadingMixin):
                 try:
                     rows = self._build_zmatrix_data()
                     variables = style == COORD_ZMATRIX_VARIABLES
-                    return (
-                        zmatrix_cards(rows, variables, length, angle),
-                        "ZMT",
-                        "",
-                    )
+                    return zmatrix_cards(rows, variables, length), "ZMT", ""
                 except (ValueError, RuntimeError) as exc:
                     notice = f"{exc} Using Cartesian."
         return cartesian_cards(self._cartesian_atoms(), length), "UNIQUE", notice

@@ -9,7 +9,7 @@ import tempfile
 
 from .group_builder import (
     ELEMENTS,
-    coordinate_factors,
+    length_factor,
     format_groups,
     get_option,
     parse_groups,
@@ -65,7 +65,7 @@ def _number(value):
     return value
 
 
-def internal_rows(lines, variables="", angle_factor=1.0):
+def internal_rows(lines, variables=""):
     """Display ordinary Z-matrices without evaluating input as Python code."""
     values = {}
     for line in variables.splitlines():
@@ -138,9 +138,9 @@ def internal_rows(lines, variables="", angle_factor=1.0):
                         cross(axis, subtract(rows[refs[2]][1:], rows[refs[1]][1:]))
                     )
                 tangent = cross(normal, axis)
-                angle = math.radians(value(parts[4]) * angle_factor)
+                angle = math.radians(value(parts[4]))
                 dihedral = (
-                    math.radians(value(parts[6]) * angle_factor) if index > 2 else 0.0
+                    math.radians(value(parts[6])) if index > 2 else 0.0
                 )
                 direction = tuple(
                     math.cos(angle) * a
@@ -180,14 +180,14 @@ def _structure_rows(body, groups, notes):
         )
         return []
     coord = str(get_option(groups, "CONTRL", "COORD", "UNIQUE")).upper()
-    length, angle = coordinate_factors(groups)
+    length = length_factor(groups)
     if coord in ("UNIQUE", "CART"):
         rows = [_atom_row(line.split(), length) for line in lines[1:]]
         return [row for row in rows if row]  # inline basis cards are not atoms
     if coord == "ZMT":
         text = "\n".join(lines[1:]).strip("\n")
         cards, _, variables = text.partition("\n\n")
-        rows = internal_rows(cards.splitlines(), variables, 1.0 / angle)
+        rows = internal_rows(cards.splitlines(), variables)
         return [(row[0], *(value / length for value in row[1:])) for row in rows]
     notes.append(f"COORD={coord} is kept as text; no structure is drawn.")
     return []

@@ -1,0 +1,310 @@
+{
+ "program": "GAMESS 15 JUL 2024 (R2 Patch 1)",
+ "jobs": {
+  "rhf_energy": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "uhf_triplet": {
+   "terminated": "normally",
+   "energy": -149.6144016511
+  },
+  "rohf_triplet": {
+   "terminated": "normally",
+   "energy": -149.5938497342
+  },
+  "b3lyp_opt": {
+   "terminated": "normally",
+   "energy": -76.3718188759
+  },
+  "gradient": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "hessian": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "sadpoint": {
+   "terminated": "normally",
+   "energy": -55.8696422516
+  },
+  "mp2": {
+   "terminated": "normally",
+   "energy": -76.1965989612
+  },
+  "ccsd_t": {
+   "terminated": "normally",
+   "energy": -76.2075019604
+  },
+  "tddft": {
+   "terminated": "normally",
+   "energy": -76.3715595672
+  },
+  "nmr": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "pcm": {
+   "terminated": "normally",
+   "energy": -76.0207702199
+  },
+  "smd": {
+   "terminated": "normally",
+   "energy": -76.3836871049
+  },
+  "d3": {
+   "terminated": "normally",
+   "energy": -76.3715674237
+  },
+  "d3bj": {
+   "terminated": "normally",
+   "energy": -76.3721334404
+  },
+  "basis_sto": {
+   "terminated": "normally",
+   "energy": -74.9629262177
+  },
+  "basis_n311": {
+   "terminated": "normally",
+   "energy": -76.0555757851
+  },
+  "basis_pcseg": {
+   "terminated": "normally",
+   "energy": -76.0036877282
+  },
+  "basis_acc": {
+   "terminated": "normally",
+   "energy": -76.0414290597
+  },
+  "zmatrix": {
+   "terminated": "normally",
+   "energy": -150.7620280771
+  },
+  "zmatrix_opt": {
+   "terminated": "normally",
+   "energy": -150.7647868612
+  },
+  "zmatrix_variables": {
+   "terminated": "normally",
+   "energy": -150.7620280771
+  },
+  "ghost": {
+   "terminated": "normally",
+   "energy": -76.0110354146
+  },
+  "ghost_plain": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "units_bohr": {
+   "terminated": "normally",
+   "energy": -76.0105307447
+  },
+  "zmatrix_bohr": {
+   "terminated": "normally",
+   "energy": -150.7620280648
+  },
+  "esp": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "print_orbitals": {
+   "terminated": "normally",
+   "energy": -76.0105307475
+  },
+  "cation": {
+   "terminated": "normally",
+   "energy": -75.6076547884
+  },
+  "anion": {
+   "terminated": "normally",
+   "energy": -75.3265480843
+  },
+  "job_options": {
+   "terminated": "normally",
+   "energy": -74.965901217
+  },
+  "hess_seminum": {
+   "terminated": "normally",
+   "energy": -74.9629273478
+  },
+  "hess_fullnum": {
+   "terminated": "normally",
+   "energy": -74.9629307349
+  },
+  "hess_guess": {
+   "terminated": "normally",
+   "energy": -74.965901217
+  },
+  "hess_analytic": {
+   "terminated": "normally",
+   "energy": -74.9629262177
+  },
+  "guess_huckel": {
+   "terminated": "normally",
+   "energy": -74.9629262177
+  },
+  "raman": {
+   "terminated": "normally",
+   "energy": -76.0091632797,
+   "raman_activity": true
+  },
+  "hess_read": {
+   "terminated": "normally",
+   "energy": -76.0107465153
+  },
+  "moread": {
+   "terminated": "normally",
+   "energy": -76.0105307475,
+   "iterations": 2
+  }
+ },
+ "refused": {
+  "refuse_rhf_triplet": {
+   "terminated": "abnormally",
+   "message": "SCFTYP=RHF MUST HAVE MULT=1"
+  },
+  "refuse_cc_no_memddi": {
+   "terminated": "abnormally",
+   "message": "INSUFFICIENT DISTRIBUTED MEMORY"
+  },
+  "refuse_nmr_dft": {
+   "terminated": "abnormally",
+   "message": "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"
+  },
+  "refuse_nmr_uhf": {
+   "terminated": "abnormally",
+   "message": "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"
+  },
+  "refuse_pcseg_cartesian": {
+   "terminated": "abnormally",
+   "message": "PLEASE SET ISPHER=1"
+  },
+  "refuse_cc_with_dft": {
+   "terminated": "abnormally",
+   "message": "AT MOST ONE CORRELATION METHOD"
+  },
+  "refuse_sadpoint_no_hess": {
+   "terminated": "abnormally",
+   "message": "DID NOT SUPPLY A $HESS GROUP"
+  },
+  "refuse_raman_no_hess": {
+   "terminated": "abnormally",
+   "message": "RAMAN SPECTRUM REQUIRES"
+  },
+  "refuse_mp2_with_dft": {
+   "terminated": "abnormally",
+   "message": "AT MOST ONE CORRELATION METHOD"
+  },
+  "refuse_mp2_with_cc": {
+   "terminated": "abnormally",
+   "message": "AT MOST ONE CORRELATION METHOD"
+  },
+  "refuse_nmr_dirscf": {
+   "terminated": "abnormally",
+   "message": "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"
+  },
+  "refuse_nmr_parallel": {
+   "terminated": "abnormally",
+   "message": "INCOMPATIBLE OPTION CHOSEN WITH RUNTYP=NMR"
+  },
+  "refuse_lccd_parallel": {
+   "terminated": "abnormally",
+   "message": "ONLY CCTYP=CCSD OR CCTYP=CCSD(T) CAN RUN IN PARALLEL"
+  },
+  "refuse_bad_parity": {
+   "terminated": "abnormally",
+   "message": "CHECK YOUR INPUT CHARGE AND MULTIPLICITY"
+  }
+ },
+ "sweep": {
+  "sweep_dft_SVWN": "normally",
+  "sweep_dft_BLYP": "normally",
+  "sweep_dft_BOP": "normally",
+  "sweep_dft_BP86": "normally",
+  "sweep_dft_PBE": "normally",
+  "sweep_dft_PBE0": "normally",
+  "sweep_dft_B3LYP": "normally",
+  "sweep_dft_B3LYPV3": "normally",
+  "sweep_dft_BHHLYP": "normally",
+  "sweep_dft_B3PW91": "normally",
+  "sweep_dft_B97": "normally",
+  "sweep_dft_B97-D": "normally",
+  "sweep_dft_X3LYP": "normally",
+  "sweep_dft_M05": "normally",
+  "sweep_dft_M05-2X": "normally",
+  "sweep_dft_M06": "normally",
+  "sweep_dft_M06-L": "normally",
+  "sweep_dft_M06-2X": "normally",
+  "sweep_dft_M06-HF": "normally",
+  "sweep_dft_M08-HX": "normally",
+  "sweep_dft_M08-SO": "normally",
+  "sweep_dft_M11": "normally",
+  "sweep_dft_M11-L": "normally",
+  "sweep_dft_MN15": "normally",
+  "sweep_dft_MN15-L": "normally",
+  "sweep_dft_TPSS": "normally",
+  "sweep_dft_BMK": "normally",
+  "sweep_basis_STO": "normally",
+  "sweep_basis_N21": "normally",
+  "sweep_basis_N31": "normally",
+  "sweep_basis_N311": "normally",
+  "sweep_basis_G3L": "normally",
+  "sweep_basis_G3LX": "normally",
+  "sweep_basis_MINI": "normally",
+  "sweep_basis_MIDI": "normally",
+  "sweep_basis_DZV": "normally",
+  "sweep_basis_DH": "normally",
+  "sweep_basis_TZV": "normally",
+  "sweep_basis_MC": "normally",
+  "sweep_basis_CCD": "normally",
+  "sweep_basis_CCT": "normally",
+  "sweep_basis_CCQ": "normally",
+  "sweep_basis_CC5": "normally",
+  "sweep_basis_ACCD": "normally",
+  "sweep_basis_ACCT": "normally",
+  "sweep_basis_ACCQ": "normally",
+  "sweep_basis_CCDC": "normally",
+  "sweep_basis_CCTC": "normally",
+  "sweep_basis_PCseg-0": "normally",
+  "sweep_basis_PCseg-1": "normally",
+  "sweep_basis_PCseg-2": "normally",
+  "sweep_basis_PCseg-3": "normally",
+  "sweep_basis_APCseg-0": "normally",
+  "sweep_basis_APCseg-1": "normally",
+  "sweep_basis_APCseg-2": "normally",
+  "sweep_basis_SPK-DZP": "normally",
+  "sweep_basis_SPK-TZP": "normally",
+  "sweep_basis_SPK-ADZP": "normally",
+  "sweep_basis_KTZV": "normally",
+  "sweep_basis_KTZVP": "normally",
+  "sweep_basis_KTZVPP": "normally",
+  "sweep_cc_LCCD": "normally",
+  "sweep_cc_CCD": "normally",
+  "sweep_cc_CCSD": "normally",
+  "sweep_cc_CCSD(T)": "normally",
+  "sweep_cc_R-CC": "normally",
+  "sweep_cc_CR-CC": "normally",
+  "sweep_cc_CR-CCL": "normally",
+  "sweep_cc_CCSD(TQ)": "normally",
+  "sweep_cc_CR-CC(Q)": "normally",
+  "sweep_pcm_WATER": "normally",
+  "sweep_pcm_CH3OH": "normally",
+  "sweep_pcm_C2H5OH": "normally",
+  "sweep_pcm_CLFORM": "normally",
+  "sweep_pcm_CTCL": "normally",
+  "sweep_pcm_METHYCL": "normally",
+  "sweep_pcm_12DCLET": "normally",
+  "sweep_pcm_BENZENE": "normally",
+  "sweep_pcm_TOLUENE": "normally",
+  "sweep_pcm_CLBENZ": "normally",
+  "sweep_pcm_NITMET": "normally",
+  "sweep_pcm_NEPTANE": "normally",
+  "sweep_pcm_CYCHEX": "normally",
+  "sweep_pcm_ANILINE": "normally",
+  "sweep_pcm_ACETONE": "normally",
+  "sweep_pcm_THF": "normally",
+  "sweep_pcm_DMSO": "normally"
+ }
+}

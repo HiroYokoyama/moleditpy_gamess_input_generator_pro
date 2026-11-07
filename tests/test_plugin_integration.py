@@ -1,7 +1,7 @@
 """
 tests/test_plugin_integration.py
 
-Integration tests verifying the Gaussian Input Generator Pro plugin's contract
+Integration tests verifying the GAMESS Input Generator Pro plugin's contract
 with the MoleditPy main-application PluginContext interface.
 
 Two execution modes
@@ -31,7 +31,6 @@ real-context mode.
 
 import os
 import sys
-import types
 import importlib.util
 import unittest
 from unittest.mock import MagicMock
@@ -39,100 +38,14 @@ from unittest.mock import MagicMock
 _REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 
-# ---------------------------------------------------------------------------
-# Qt / RDKit stubs
-# ---------------------------------------------------------------------------
-
-
-def _install_stubs():
-    qt_core = sys.modules.get("PySide6.QtCore")
-    if qt_core is None or not hasattr(qt_core, "__file__"):
-        qt_core = types.ModuleType("PySide6.QtCore")
-        qt_core.Qt = MagicMock()
-        qt_core.QRegularExpression = MagicMock
-        qt_core.QTimer = MagicMock
-        sys.modules["PySide6.QtCore"] = qt_core
-
-    pyside6 = sys.modules.get("PySide6")
-    if pyside6 is None or not hasattr(pyside6, "__file__"):
-        pyside6 = types.ModuleType("PySide6")
-        pyside6.QtCore = qt_core
-        sys.modules["PySide6"] = pyside6
-
-    qt_widgets = sys.modules.get("PySide6.QtWidgets")
-    if qt_widgets is None or not hasattr(qt_widgets, "__file__"):
-        qt_widgets = types.ModuleType("PySide6.QtWidgets")
-        for name in [
-            "QDialog",
-            "QVBoxLayout",
-            "QHBoxLayout",
-            "QLabel",
-            "QLineEdit",
-            "QSpinBox",
-            "QPushButton",
-            "QGroupBox",
-            "QComboBox",
-            "QTextEdit",
-            "QTabWidget",
-            "QTableWidget",
-            "QTableWidgetItem",
-            "QCheckBox",
-            "QWidget",
-            "QFormLayout",
-            "QCompleter",
-            "QSizePolicy",
-            "QMessageBox",
-            "QFileDialog",
-            "QInputDialog",
-            "QApplication",
-            "QScrollArea",
-        ]:
-            setattr(qt_widgets, name, MagicMock)
-        pyside6.QtWidgets = qt_widgets
-        sys.modules["PySide6.QtWidgets"] = qt_widgets
-
-    qt_gui = sys.modules.get("PySide6.QtGui")
-    if qt_gui is None or not hasattr(qt_gui, "__file__"):
-        if qt_gui is None:
-            qt_gui = types.ModuleType("PySide6.QtGui")
-            sys.modules["PySide6.QtGui"] = qt_gui
-
-        class MockQColor(MagicMock):
-            def __init__(self, *args, **kwargs):
-                super().__init__()
-
-            def redF(self):
-                return 1.0
-
-            def greenF(self):
-                return 1.0
-
-            def blueF(self):
-                return 1.0
-
-        setattr(qt_gui, "QColor", MockQColor)
-        mock_font = MagicMock()
-        mock_font.Weight.Bold = 75
-        setattr(qt_gui, "QFont", mock_font)
-        setattr(qt_gui, "QPalette", MagicMock)
-        setattr(qt_gui, "QKeySequence", MagicMock)
-        setattr(qt_gui, "QShortcut", MagicMock)
-        pyside6.QtGui = qt_gui
-        sys.modules["PySide6.QtGui"] = qt_gui
-
-    sys.modules.setdefault("rdkit", MagicMock())
-    sys.modules.setdefault("rdkit.Chem", MagicMock())
-    sys.modules.setdefault("pyvista", MagicMock())
-
-
-_install_stubs()
+# The package imports Qt only when a window opens, so no stubs are needed here.
 
 
 def _load_init():
-    key = "gaussian_input_generator_pro"
+    key = "gamess_input_generator_pro"
     if key in sys.modules:
         return sys.modules[key]
-    path = os.path.join(_REPO_ROOT, "gaussian_input_generator_pro", "__init__.py")
+    path = os.path.join(_REPO_ROOT, "gamess_input_generator_pro", "__init__.py")
     spec = importlib.util.spec_from_file_location(key, path)
     mod = importlib.util.module_from_spec(spec)
     mod.__package__ = key
@@ -255,13 +168,13 @@ class TestPersistenceHandlers(unittest.TestCase):
 
     # --- load ---
 
-    def test_load_updates_nproc(self):
-        self.load({"nproc": 16})
-        self.assertEqual(_init_mod.current_settings["nproc"], 16)
+    def test_load_updates_mwords(self):
+        self.load({"mwords": 16})
+        self.assertEqual(_init_mod.current_settings["mwords"], 16)
 
-    def test_load_updates_mem_val(self):
-        self.load({"mem_val": 32})
-        self.assertEqual(_init_mod.current_settings["mem_val"], 32)
+    def test_load_updates_memddi(self):
+        self.load({"memddi": 32})
+        self.assertEqual(_init_mod.current_settings["memddi"], 32)
 
     def test_load_ignores_non_dict(self):
         before = dict(_init_mod.current_settings)
@@ -275,7 +188,7 @@ class TestPersistenceHandlers(unittest.TestCase):
 
     def test_load_sets_dialog_opened_flag(self):
         _init_mod._dialog_opened = False
-        self.load({"nproc": 8})
+        self.load({"mwords": 8})
         self.assertTrue(_init_mod._dialog_opened)
         self.assertIsInstance(self.save(), dict)
 
@@ -285,19 +198,19 @@ class TestPersistenceHandlers(unittest.TestCase):
         self.assertFalse(_init_mod._dialog_opened)
 
     def test_load_strips_charge_and_mult(self):
-        self.load({"nproc": 8, "charge": 2, "mult": 3})
-        self.assertEqual(_init_mod.current_settings["nproc"], 8)
+        self.load({"mwords": 8, "charge": 2, "mult": 3})
+        self.assertEqual(_init_mod.current_settings["mwords"], 8)
         self.assertNotIn("charge", _init_mod.current_settings)
         self.assertNotIn("mult", _init_mod.current_settings)
 
     # --- reset ---
 
     def test_reset_restores_defaults(self):
-        self.load({"nproc": 99, "mem_val": 999})
+        self.load({"mwords": 99, "memddi": 999})
         self.reset()
         defaults = _init_mod.get_default_settings()
-        self.assertEqual(_init_mod.current_settings["nproc"], defaults["nproc"])
-        self.assertEqual(_init_mod.current_settings["mem_val"], defaults["mem_val"])
+        self.assertEqual(_init_mod.current_settings["mwords"], defaults["mwords"])
+        self.assertEqual(_init_mod.current_settings["memddi"], defaults["memddi"])
 
     def test_reset_clears_dialog_opened_flag(self):
         _init_mod._dialog_opened = True
@@ -309,13 +222,13 @@ class TestPersistenceHandlers(unittest.TestCase):
 
     def test_roundtrip_save_load(self):
         _init_mod._dialog_opened = True
-        self.load({"nproc": 8, "mem_val": 16, "route": "#P B3LYP/6-31G(d) Opt"})
+        self.load({"mwords": 8, "memddi": 16, "groups": " $CONTRL RUNTYP=OPTIMIZE $END"})
         saved = dict(self.save())
         self.reset()
         _init_mod._dialog_opened = True
         self.load(saved)
-        self.assertEqual(_init_mod.current_settings["nproc"], 8)
-        self.assertEqual(_init_mod.current_settings["route"], "#P B3LYP/6-31G(d) Opt")
+        self.assertEqual(_init_mod.current_settings["mwords"], 8)
+        self.assertEqual(_init_mod.current_settings["groups"], " $CONTRL RUNTYP=OPTIMIZE $END")
 
 
 # ---------------------------------------------------------------------------
@@ -368,7 +281,7 @@ class TestWithRealPluginContext(unittest.TestCase):
         cls.PluginContext = PluginContext
         mock_manager = MagicMock()
         mock_manager.get_main_window.return_value = MagicMock()
-        cls.real_ctx = PluginContext(mock_manager, "Gaussian Input Generator Pro")
+        cls.real_ctx = PluginContext(mock_manager, "GAMESS Input Generator Pro")
 
     def test_real_initialize_does_not_raise(self):
         _init_mod.current_settings.clear()
@@ -409,7 +322,7 @@ class TestMarkModifiedCallback(unittest.TestCase):
     context.mark_project_modified() — never to direct state_manager access.
 
     We reproduce the exact closure body from run() rather than calling run()
-    itself, which avoids importing GaussianSetupDialogPro (a Qt-heavy class).
+    itself, which avoids importing GamessSetupDialogPro (a Qt-heavy class).
     """
 
     def setUp(self):

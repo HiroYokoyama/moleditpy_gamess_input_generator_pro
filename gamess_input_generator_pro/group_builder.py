@@ -137,36 +137,27 @@ def finalize_groups(groups, charge, mult, mwords, memddi, coord):
     return sorted(groups, key=lambda group: rank.get(group[0], 2))
 
 
-def coordinate_factors(groups):
-    """Input length and angle per Angstrom and degree, from UNITS and AUNITS."""
+def length_factor(groups):
+    """Input length per Angstrom, from UNITS. Angles are always degrees."""
     units = str(get_option(groups, "CONTRL", "UNITS", "ANGS")).upper()
-    aunits = str(get_option(groups, "CONTRL", "AUNITS", "DEGREE")).upper()
-    return (
-        1.0 / BOHR_ANGSTROM if units.startswith("BOHR") else 1.0,
-        3.141592653589793 / 180.0 if aunits.startswith("RADIAN") else 1.0,
-    )
+    return 1.0 / BOHR_ANGSTROM if units.startswith("BOHR") else 1.0
 
 
-def cartesian_cards(atoms, length_factor=1.0):
+def cartesian_cards(atoms, length=1.0):
     """`label ZNUC x y z` cards; a negative ZNUC is a ghost with that atom's basis."""
     return [
-        f"{label:<4} {znuc:>6.1f} {x * length_factor:>14.8f} "
-        f"{y * length_factor:>14.8f} {z * length_factor:>14.8f}"
+        f"{label:<4} {znuc:>6.1f} {x * length:>14.8f} "
+        f"{y * length:>14.8f} {z * length:>14.8f}"
         for label, znuc, x, y, z in atoms
     ]
 
 
-def zmatrix_cards(rows, variables=False, length_factor=1.0, angle_factor=1.0):
+def zmatrix_cards(rows, variables=False, length=1.0):
     """COORD=ZMT cards; with variables, a blank card and then `NAME VALUE` cards."""
     lines, defined = [], []
     for index, row in enumerate(rows):
         fields = [f"{row['symbol']:<4}"]
-        scaled = zip(
-            "BAD",
-            row["refs"],
-            row["values"],
-            (length_factor, angle_factor, angle_factor),
-        )
+        scaled = zip("BAD", row["refs"], row["values"], (length, 1.0, 1.0))
         for prefix, ref, value, factor in scaled:
             value *= factor
             if variables:
@@ -204,6 +195,8 @@ def check_input(groups, mult, electrons=None, memddi=0, extra=""):
     runtyp = str(get_option(groups, "CONTRL", "RUNTYP", "ENERGY")).upper()
     dfttyp = str(get_option(groups, "CONTRL", "DFTTYP", "NONE")).upper()
     cctyp = str(get_option(groups, "CONTRL", "CCTYP", "NONE")).upper()
+    mplevl = str(get_option(groups, "CONTRL", "MPLEVL", "0"))
+    dirscf = str(get_option(groups, "SCF", "DIRSCF", "")).upper()
     gbasis = get_option(groups, "BASIS", "GBASIS")
     ispher = str(get_option(groups, "CONTRL", "ISPHER", "-1"))
     extra_names = {name for name, _, _ in split_groups(extra)}
@@ -214,12 +207,17 @@ def check_input(groups, mult, electrons=None, memddi=0, extra=""):
         notes.append("SCFTYP=RHF needs MULT=1. Choose ROHF or UHF for an open shell.")
     if needs_spherical(gbasis) and ispher != "1":
         notes.append(f"GBASIS={gbasis} needs ISPHER=1 in $CONTRL.")
-    if cctyp != "NONE" and not memddi:
+    if cctyp in ("CCSD", "CCSD(T)") and not memddi:
         notes.append(f"CCTYP={cctyp} needs MEMDDI above zero.")
-    if cctyp != "NONE" and dfttyp != "NONE":
-        notes.append("DFTTYP and CCTYP cannot be combined.")
+    elif cctyp != "NONE" and cctyp not in ("CCSD", "CCSD(T)"):
+        notes.append(f"CCTYP={cctyp} runs on one core only, with MEMDDI=0.")
+    methods = (dfttyp != "NONE", mplevl != "0", cctyp != "NONE")
+    if sum(methods) > 1:
+        notes.append("Choose at most one of DFTTYP, MPLEVL and CCTYP.")
     if runtyp == "NMR" and (dfttyp != "NONE" or scftyp != "RHF"):
         notes.append("RUNTYP=NMR works only with RHF: no DFT, no open shell.")
+    if runtyp == "NMR" and dirscf in (".TRUE.", ".T."):
+        notes.append("RUNTYP=NMR does not work with DIRSCF.")
     if runtyp == "NMR":
         notes.append("RUNTYP=NMR runs serially: submit it on one core.")
     if runtyp == "RAMAN" and not {"HESS", "DIPDR"} <= extra_names:
