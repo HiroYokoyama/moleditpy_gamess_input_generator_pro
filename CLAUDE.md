@@ -6,7 +6,7 @@ Guidance for Claude Code when working in this repository.
 
 A MoleditPy plugin that writes and reads GAMESS (US) input files.
 `gamess_input_generator_pro/` is the whole plugin; it ships as a zip of that directory.
-It is at 0.1.0 and its description says UNDER DEVELOPMENT.
+It is at 0.1.1 and its description says UNDER DEVELOPMENT.
 
 ## Layout
 
@@ -58,7 +58,7 @@ machine, or any GAMESS source.
 
 `PLUGIN_VERSION` in `__init__.py` is the single source of truth. Tags, releases and the
 registry entry wait for the user's word. `scripts/zenodo-config.json` has no deposition
-yet, so v0.1.0 has no Zenodo record.
+yet. The user authorized publishing v0.1.1 without Zenodo on 2026-11-08.
 
 ## Copied maintenance scripts
 
