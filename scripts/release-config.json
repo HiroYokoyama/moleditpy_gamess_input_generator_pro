@@ -1,0 +1,19 @@
+{
+  "source": "gamess_input_generator_pro/__init__.py",
+  "title": "GAMESS Input Generator Pro",
+  "package": "gamess_input_generator_pro",
+  "archive": "gamess_input_generator_pro_{version}.zip",
+  "assets": [
+    "gamess_input_generator_pro_{version}.zip"
+  ],
+  "include": [
+    "README.md",
+    "LICENSE",
+    "COPYING",
+    "LICENSING.md"
+  ],
+  "exclude": [
+    "*/__pycache__/*",
+    "*/.git/*"
+  ]
+}
