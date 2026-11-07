@@ -44,8 +44,9 @@ python -m pytest tests/test_group_builder.py tests/test_input_parsing.py tests/t
 python -m pytest tests/test_real_dialog.py -q
 ```
 
-CI's main job installs pytest only, so the package must import without Qt; the real
-window test is skipped there and runs in `qt-callbacks.yml` with `REQUIRE_REAL_QT=1`.
+There are no GitHub workflows for now, so run these locally. The package must still
+import without Qt; the real window test is skipped without it, and `REQUIRE_REAL_QT=1`
+makes that a failure.
 
 ## Privacy
 
@@ -57,7 +58,7 @@ machine, or any GAMESS source.
 
 `PLUGIN_VERSION` in `__init__.py` is the single source of truth. Tags, releases and the
 registry entry wait for the user's word. `scripts/zenodo-config.json` has no deposition
-yet, so a Zenodo record is needed before the first tag.
+yet, so v0.1.0 has no Zenodo record.
 
 ## Copied maintenance scripts
 
