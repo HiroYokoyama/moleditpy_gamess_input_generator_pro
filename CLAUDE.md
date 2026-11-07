@@ -6,7 +6,7 @@ Guidance for Claude Code when working in this repository.
 
 A MoleditPy plugin that writes and reads GAMESS (US) input files.
 `gamess_input_generator_pro/` is the whole plugin; it ships as a zip of that directory.
-It is at 0.1.0 and its description says UNDER DEVELOPMENT.
+It is at 0.1.1 and its description says UNDER DEVELOPMENT.
 
 ## Layout
 
@@ -44,9 +44,9 @@ python -m pytest tests/test_group_builder.py tests/test_input_parsing.py tests/t
 python -m pytest tests/test_real_dialog.py -q
 ```
 
-There are no GitHub workflows for now, so run these locally. The package must still
-import without Qt; the real window test is skipped without it, and `REQUIRE_REAL_QT=1`
-makes that a failure.
+CI runs the headless suite in `tests.yml` and real windows in `qt-callbacks.yml`.
+The package must import without Qt; `REQUIRE_REAL_QT=1` makes missing real-window
+dependencies a failure in the Qt job.
 
 ## Privacy
 
@@ -58,7 +58,7 @@ machine, or any GAMESS source.
 
 `PLUGIN_VERSION` in `__init__.py` is the single source of truth. Tags, releases and the
 registry entry wait for the user's word. `scripts/zenodo-config.json` has no deposition
-yet, so v0.1.0 has no Zenodo record.
+yet. The user authorized publishing v0.1.1 without Zenodo on 2026-11-08.
 
 ## Copied maintenance scripts
 

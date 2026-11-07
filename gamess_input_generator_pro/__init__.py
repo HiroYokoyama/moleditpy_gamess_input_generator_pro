@@ -4,7 +4,7 @@ import os
 from .constants import DEFAULT_GROUPS, DEFAULT_TITLE
 
 PLUGIN_NAME = "GAMESS Input Generator Pro"
-PLUGIN_VERSION = "0.1.0"
+PLUGIN_VERSION = "0.1.1"
 PLUGIN_AUTHOR = "HiroYokoyama"
 PLUGIN_LICENSE = "LGPL-3.0-or-later"
 PLUGIN_DESCRIPTION = (
