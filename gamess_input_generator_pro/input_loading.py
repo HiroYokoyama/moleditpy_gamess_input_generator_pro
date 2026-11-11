@@ -168,9 +168,14 @@ def _atom_row(parts, length):
     return (label, *(value / length for value in xyz))
 
 
+def _data_cards(body):
+    """The $DATA body from its title card on; the rest of the $DATA card is ignored."""
+    return "\n".join(body.split("\n")[1:]).strip("\n")
+
+
 def _structure_rows(body, groups, notes):
     """Atoms of a $DATA body, or [] with a note when they cannot be drawn."""
-    lines = body.strip("\n").splitlines()[1:]  # the title card
+    lines = _data_cards(body).splitlines()[1:]  # the title card
     symmetry = lines[0].split() if lines else []
     if not symmetry or symmetry[0].upper() != "C1":
         notes.append(
@@ -230,14 +235,14 @@ def parse_input(text, source_path=""):
     if data is None:
         notes.append("There is no $DATA group, so no structure is drawn.")
     else:
-        title = data.strip("\n").splitlines()
+        title = _data_cards(data).splitlines()
         settings["title"] = title[0].strip() if title else ""
         try:
             rows = _structure_rows(data, options, notes)
         except ValueError as exc:
             notes.append(f"Structure could not be read: {exc}")
     if str(get_option(options, "CONTRL", "COORD", "")).upper() == "ZMT":
-        has_variables = bool(data and "\n\n" in data.strip("\n"))
+        has_variables = bool(data and "\n\n" in _data_cards(data))
         settings["coord_format"] = (
             "Z-Matrix (variables)" if has_variables else "Z-Matrix"
         )

@@ -128,6 +128,24 @@ H 1.0 0 0 1
         self.assertIn(" 1 1 1.0", settings["extra"])
         self.assertNotIn("HESS", settings["groups"])
 
+    def test_the_rest_of_the_data_card_is_ignored(self):
+        # GAMESS reads the title from the next card, whatever follows $DATA.
+        for tail in ("   ", " ! water anion", "\t"):
+            text = CARTESIAN.replace(" $DATA\n", f" $DATA{tail}\n")
+            settings, rows, notes = parse_input(text)
+            self.assertEqual(settings["title"], "My title", repr(tail))
+            self.assertEqual(len(rows), 2, repr(tail))
+            self.assertEqual(notes, [], repr(tail))
+
+    def test_zmatrix_variables_after_a_data_card_with_text(self):
+        text = (
+            " $CONTRL COORD=ZMT $END\n $DATA  \nt\nC1\nO\nH 1 R\nH 1 R 2 A\n\n"
+            "R 0.96\nA 104.5\n $END\n"
+        )
+        settings, rows, _notes = parse_input(text)
+        self.assertEqual(settings["coord_format"], "Z-Matrix (variables)")
+        self.assertEqual(len(rows), 3)
+
     def test_bad_number_is_a_note(self):
         notes = parse_input(" $CONTRL ICHARG=X $END\n $DATA\nt\nC1\n $END\n")[2]
         self.assertTrue(any("ICHARG" in note for note in notes))
