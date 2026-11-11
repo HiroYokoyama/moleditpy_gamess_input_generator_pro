@@ -6,7 +6,7 @@ Guidance for Claude Code when working in this repository.
 
 A MoleditPy plugin that writes and reads GAMESS (US) input files.
 `gamess_input_generator_pro/` is the whole plugin; it ships as a zip of that directory.
-It is at 0.1.2 and its description says UNDER DEVELOPMENT.
+It is at 0.2.0.
 
 ## Layout
 
