@@ -7,7 +7,7 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/HiroYokoyama/moleditpy_gamess_input_generator_pro/total)](https://github.com/HiroYokoyama/moleditpy_gamess_input_generator_pro/releases)
 
 A plugin for MoleditPy that writes GAMESS (US) input files from the molecule on
-screen, and reads them back. It is under development, at version 0.1.2.
+screen, and reads them back. It is at version 0.2.0.
 
 This plugin is an independent project and is not affiliated with or endorsed by the
 Gordon Group at Iowa State University. It writes text files; you need your own copy of
